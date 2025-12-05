@@ -1,20 +1,11 @@
-// Standard Jenkins Pipeline Setup (Make sure your overall agent is 'any' or 'node')
-agent any
-
-stages {
-    stage('Build Docker Image') {
-        // Use a Docker image that has the Docker CLI and tools for the build
-        agent {
-            docker {
-                image 'docker:dind' // 'dind' image is best for running Docker inside a container
-                // Optionally map credentials, though not strictly needed for build
-                args '-u root:root' // Run as root to avoid permissions issues when running docker commands
-            }
-        }
-        steps {
-            // Note: The sh command now executes inside the docker:dind container
-            sh 'docker build -t hello-jenkins .'
+stage('Build Docker Image') {
+    agent {
+        docker {
+            image 'docker:dind'
+            args '--privileged' // Necessary for the dind image to run the daemon
         }
     }
-    // ... rest of your stages (e.g., Run Docker Container)
+    steps {
+        sh 'docker build -t hello-jenkins .'
+    }
 }
