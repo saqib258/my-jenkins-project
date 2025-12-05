@@ -1,11 +1,12 @@
-stage('Build Docker Image') {
-    agent {
-        docker {
-            image 'docker:dind'
-            args '--privileged' // Necessary for the dind image to run the daemon
+// ... other directives
+
+agent any // or agent { node { label 'your-agent' } }
+
+stages {
+    stage('Build Docker Image') {
+        steps {
+            sh 'docker build -t hello-jenkins .' // Fails here
         }
     }
-    steps {
-        sh 'docker build -t hello-jenkins .'
-    }
+    // ...
 }
