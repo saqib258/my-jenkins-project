@@ -1,28 +1,30 @@
 pipeline {
-    agent any // This is the required top-level agent directive
+    // 1. TOP LEVEL: 'pipeline'
+    agent any // General agent for the overall pipeline
 
-    stages { // MUST have the 'stages' block
-        
+    stages {
+        // 2. STAGE LEVEL: Define a stage
         stage('Checkout Code') {
-            steps { // The 'steps' block is correctly placed inside the 'stage'
+            steps {
                 checkout scm
             }
         }
 
         stage('Build Docker Image') {
-            // The Docker agent must be defined at the 'stage' level
+            // 3. AGENT LEVEL: Define the docker agent here, as a direct child of the stage
             agent {
                 docker {
-                    image 'docker:dind' 
+                    image 'docker:dind'
                     args '--privileged'
                 }
             }
-            // The steps block for this stage MUST come directly after the agent block
+            // 4. STEPS LEVEL: The 'steps' block MUST follow the 'agent' block, 
+            //    and be a direct child of the 'stage' block.
             steps { 
                 sh 'docker build -t hello-jenkins .'
             }
         }
-        
+
         // Add more stages here...
     }
 }
