@@ -1,26 +1,35 @@
 pipeline {
-    agent any
+    agent any // This sets a default agent for the overall pipeline
 
     stages {
+        stage('Checkout Code') {
+            steps {
+                checkout scm
+            }
+        }
+        
         stage('Build Docker Image') {
+            // CRITICAL CHANGE: This agent spins up a container with the Docker CLI
+            agent {
+                docker {
+                    // Use the docker:dind image, which has the Docker CLI
+                    image 'docker:dind' 
+                    // The --privileged argument is often necessary for dind to work correctly
+                    args '--privileged' 
+                }
+            }
             steps {
-                sh 'docker build -t hello-jenkins .'
+                // This command now runs INSIDE the temporary docker:dind container
+                sh 'docker build -t hello-jenkins .' 
             }
         }
-
-        stage('Run Docker Container') {
+        
+        stage('Run Container') {
+            // You can run the container on the main agent if you fixed the socket mount, 
+            // or use a dedicated agent for running. For now, keep it simple.
             steps {
-                sh 'docker run --rm hello-jenkins'
+                sh 'echo "Skipping Run for now, focusing on Build fix."'
             }
-        }
-    }
-
-    post {
-        success {
-            echo 'Pipeline executed successfully!'
-        }
-        failure {
-            echo 'Pipeline failed!'
         }
     }
 }
