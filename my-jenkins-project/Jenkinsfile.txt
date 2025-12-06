@@ -1,20 +1,18 @@
 pipeline {
     agent any
 
-    stages { // MUST have the 'stages' block
-        
-        // This is a single, correct stage definition:
-        stage('Build Docker Image') { 
-            // 1. The 'agent' block comes first, inside the stage
-            agent { 
-                docker {
-                    image 'docker:dind' 
-                    args '--privileged'
-                }
+    stages {
+
+        stage('Checkout') {
+            steps {
+                git url: 'https://github.com/saqib258/my-jenkins-project.git', branch: 'main'
             }
-            // 2. The 'steps' block comes DIRECTLY after the agent, inside the stage
-            steps { 
-                sh 'docker build -t hello-jenkins .'
+        }
+
+        stage('Build') {
+            steps {
+                sh 'ls -la'
+                echo "Build stage completed"
             }
         }
     }
