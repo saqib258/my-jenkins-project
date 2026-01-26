@@ -2,25 +2,23 @@ pipeline {
     agent any
 
     stages {
-        stage('Build Docker Image') {
+        stage('Checkout') {
             steps {
-                sh 'docker build -t hello-jenkins .'
+                git branch: 'main',
+                    url: 'https://github.com/saqib258/my-jenkins-project.git'
             }
         }
 
-        stage('Run Docker Container') {
+        stage('Build') {
             steps {
-                sh 'docker run --rm hello-jenkins'
+                sh 'mvn clean package'
             }
         }
-    }
 
-    post {
-        success {
-            echo 'Pipeline executed successfully!'
-        }
-        failure {
-            echo 'Pipeline failed!'
+        stage('Docker Build') {
+            steps {
+                sh 'docker build -t devsecops-app .'
+            }
         }
     }
 }
