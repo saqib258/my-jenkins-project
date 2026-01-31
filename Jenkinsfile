@@ -1,23 +1,16 @@
 pipeline {
     agent any
-
     stages {
         stage('Checkout') {
             steps {
-                git branch: 'main',
-                    url: 'https://github.com/saqib258/my-jenkins-project.git'
+                git branch: 'main', url: 'https://github.com/saqib258/my-jenkins-project.git'
             }
         }
-
-        stage('Build') {
+        stage('Verify Environment') {
             steps {
-                sh 'mvn clean package'
-            }
-        }
-
-        stage('Docker Build') {
-            steps {
-                sh 'docker build -t devsecops-app .'
+                sh 'java -version'
+                sh 'mvn -version'
+                sh 'docker --version'
             }
         }
     }
