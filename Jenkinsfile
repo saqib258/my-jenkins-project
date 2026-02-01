@@ -15,3 +15,11 @@ pipeline {
         }
     }
 }
+stage('Security Analysis (SonarQube)') {
+    steps {
+        // withSonarQubeEnv uses the "Name" you gave in Jenkins System settings
+        withSonarQubeEnv('SonarQube') {
+            sh 'mvn sonar:sonar -Dsonar.projectKey=MyDevSecOpsProject'
+        }
+    }
+}
