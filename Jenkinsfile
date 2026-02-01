@@ -13,8 +13,6 @@ pipeline {
                 sh 'docker --version'
             }
         }
-    
-
-        }
-    }
+     }
 }
+
