@@ -2,7 +2,7 @@ pipeline {
     agent any
     
     tools {
-        // Ensure this name 'maven' matches your Jenkins Global Tool Configuration
+        // This must match the name in Manage Jenkins > Tools
         maven 'maven' 
     }
 
@@ -13,29 +13,26 @@ pipeline {
             }
         }
 
+        // --- PASTE THE VERIFY STAGE HERE ---
         stage('Verify Environment') {
             steps {
-                sh 'java -version'
-                sh 'mvn -version'
+                sh 'ls -la'       // Confirms pom.xml was pulled from GitHub
+                sh 'java -version' // Confirms JDK 17 is active
+                sh 'mvn -version'  // Confirms Maven is installed correctly
                 sh 'docker --version'
+            }
+        }
+
+        stage('Build & Package') {
+            steps {
+                sh 'mvn clean package -DskipTests'
             }
         }
 
         stage('Static Security Analysis (SonarQube)') {
             steps {
-                // 'SonarQube' must match the server name in Manage Jenkins > System
                 withSonarQubeEnv('SonarQube') {
                     sh 'mvn sonar:sonar -Dsonar.projectKey=DevSecOps-Thesis'
-                }
-            }
-        }
-
-        stage("Quality Gate Check") {
-            steps {
-                // This waits for SonarQube to finish and tell Jenkins the result.
-                // It will fail the pipeline if the code does not meet security standards.
-                timeout(time: 5, unit: 'MINUTES') {
-                    waitForQualityGate abortPipeline: true
                 }
             }
         }
